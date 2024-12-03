@@ -2,7 +2,7 @@ public class Cat extends Animal{
     protected final String food= "Meat";
     protected final String medication= "Antibiotic";
 
-    public Cat(String name, String age, String food, String medicin) {
+    public Cat(String name, String age) {
         super(name, age);
     }
 
