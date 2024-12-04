@@ -137,7 +137,7 @@ public class Reception {
             return;
         }
 
-        System.out.println("Skapa ny ägare: ");
+        System.out.println("Skapa ny djurägare: ");
         Owner newOwner = addNewCostumer();
 
         if (oldOwner.getPet().size() > 1) {

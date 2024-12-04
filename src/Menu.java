@@ -56,7 +56,7 @@ public class Menu {
                 return true;
             case "B":
                 //Byta ägare
-                System.out.println("Vad är telefonnummer till ägare som ska byta bort djur? ");
+                System.out.println("Vad är telefonnummer till ägaren som ska byta bort djur? ");
                 reception.changePetOwnership(scanner.nextLine());
                 return true;
             case "A":
