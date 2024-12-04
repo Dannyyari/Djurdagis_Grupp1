@@ -41,12 +41,20 @@ public class Reception {
         System.out.println("Vi behöver ditt telefonnummer");
         String number=sc.nextLine().trim();
         if (checkIfOwnerAlreadyHasAnimals(name, number)){
+            Owner tempOwner=null;
             //existingCostumers.add(new Owner(name, number));
             System.out.println("Du verkar ha ett djur inne, vill du ha ett till på dagis?");
             System.out.println("Y för ja och N för nej");
             if (sc.nextLine().equalsIgnoreCase(answerY)){
                 System.out.println("Okej, vill du lämna en"+
                         "[K]att"+ "[H]und"+ "[F]ågel");
+                System.out.println("Namnet på ditt djur?");
+                String nameOfPet=sc.nextLine();
+                System.out.println("Ålder på dit djur?");
+                String age= sc.nextLine();
+                switch (sc.nextLine().toLowerCase()){
+                    case "k"-> tempOwner.addPet(new Cat(nameOfPet, age ));
+                }
                 //skriva kod som man kan lägga till nya djur till befintlig kund
             }//else att bara avsluta.
         }else {
