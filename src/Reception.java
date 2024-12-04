@@ -47,11 +47,16 @@ public class Reception {
         System.out.println("Vi behöver ditt telefonnummer");
         String number = sc.nextLine().trim();
         if (checkIfOwnerAlreadyHasAnimals(name, number)) {
-            //existingCostumers.add(new Owner(name, number));
-            System.out.println("Du verkar ha ett djur inne, vill du ha ett till på dagis?");
+            System.out.println("Du verkar redan ha ett djur inlagd, vill du lägga till en till? (y/n)");
+            String answer = sc.nextLine().trim();
+
             if (sc.nextLine().equalsIgnoreCase(answerY)) {
-                //skriva kod som man kan lägga till nya djur till befintlig kund
-            }//else att bara avsluta.
+
+                System.out.println("lägger till djur på:" + name);
+                addAnimalToExistingOwner(name, number);
+
+
+            }
         }
     }
 
@@ -82,9 +87,7 @@ public class Reception {
         System.out.println("Djurets ålder:");
         String petAge = sc.nextLine().trim();
 
-
         Animal newAnimal = new Animal(petName, petAge);
-
 
         Animal animal = new Animal(petName, petAge);
 
@@ -101,6 +104,29 @@ public class Reception {
         System.out.println("Ägare hittades ej!");
     }
 
+    private Animal createNewAnimal() {
+        System.out.println("Djurets namn:");
+        String petName = sc.nextLine().trim();
+
+        System.out.println("Djurets ålder:");
+        String petAge = sc.nextLine().trim();
+
+        return new Animal(petName, petAge); // Skapa och returnera ett nytt Animal-objekt
+    }
+
+    private void addAnimalToExistingOwner(String name, String number) {
+        for (Owner existingOwner : existingCostumers) {
+            if (existingOwner.getName().equalsIgnoreCase(name) &&
+                    existingOwner.getPhoneNumber().equalsIgnoreCase(number)) {
+
+                Animal newAnimal = createNewAnimal(); // Skapa ett nytt djur
+                existingOwner.addPet(newAnimal);     // Lägg till djuret till ägaren
+                System.out.println("Djuret har lagts till för " + existingOwner.getName());
+                return;
+            }
+        }
+        System.out.println("Kunde inte hitta kunden.");
+    }
     public void listAnimals() {
         System.out.println("Incheckade djur:");
         for (Owner petOwner : petsInToday) {
