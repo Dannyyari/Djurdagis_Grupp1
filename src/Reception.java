@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
 
 public class Reception {
@@ -28,32 +27,26 @@ public class Reception {
                 } else {
                     System.out.println("Redan incheckad för idag");
                 }
-                return;
-            } else {
-                System.out.println("Hittar ej meddelande, kanske fel nummer?");
+                break;
             }
         }
     }
 
-    public void addNewCostumer() {
-        System.out.println("Lägga till nytt djur, absolut!");
-        System.out.println("Vi behöver ditt namn");
+    public Owner addNewCostumer() {
+        System.out.println("Ditt namn");
         String name = sc.nextLine().trim();
-        System.out.println("Vi behöver ditt telefonnummer");
+
+        System.out.println("Ditt telefonnummer");
         String number = sc.nextLine().trim();
-        if (checkIfOwnerAlreadyHasAnimals(name, number)) {
-            //existingCostumers.add(new Owner(name, number));
-            System.out.println("Du verkar ha ett djur inne, vill du ha ett till på dagis?");
-            System.out.println("Y för ja och N för nej");
-            if (sc.nextLine().equalsIgnoreCase(answerY)) {
-                System.out.println("Okej, vill du lämna en" +
-                        "[K]att" + "[H]und" + "[F]ågel");
-                //skriva kod som man kan lägga till nya djur till befintlig kund
-            }//else att bara avsluta.
-        } else {
-            System.out.println("Okej, vill du lämna en" +
-                    "[K]att" + "[H]und" + "[F]ågel");
-        }
+
+        Owner newOwner = new Owner(name, number);
+        existingCostumers.add(newOwner);
+        return newOwner;
+    }
+
+    public void addAnimalToNewCustomer() {
+        Owner newOwner = addNewCostumer();
+        addAnimalToExistingOwner(newOwner.getName(), newOwner.getPhoneNumber());
     }
 
     public boolean checkIfOwnerAlreadyHasAnimals(String name, String number) {
@@ -73,19 +66,70 @@ public class Reception {
         }
     }
 
-    public void changeOwner(String phoneNumber) {
-        Owner oldOwner = null;
-        Owner newOwner;
-        Animal pet;
+    public void addAnimal() {
 
-        for (Owner petOwner : existingCostumers) {
-            if (petOwner.getPhoneNumber().equals(phoneNumber)) {
-                oldOwner = petOwner;
-                break;
-            } else {
-                System.out.println("Det finns ingen ägare med det här telefonummret");
+        Animal newAnimal = createNewAnimal();
+
+        System.out.println("Ange ägares mobilnummer:");
+        String phonenumber = sc.nextLine().trim();
+
+        for (Owner owner : existingCostumers) {
+            if (owner.getPhoneNumber().equalsIgnoreCase(phonenumber)) {
+                owner.addPet(newAnimal);
+                System.out.println("Djuret är tillagd för " + owner.getName());
                 return;
             }
+        }
+        System.out.println("Ägare hittades ej!");
+    }
+
+    private Animal createNewAnimal() {
+        System.out.println("Djurets namn:");
+        String petName = sc.nextLine().trim();
+
+        System.out.println("Djurets ålder:");
+        String petAge = sc.nextLine().trim();
+
+        return new Animal(petName, petAge);
+    }
+
+    private void addAnimalToExistingOwner(String name, String number) {
+        for (Owner existingOwner : existingCostumers) {
+            if (existingOwner.getName().equalsIgnoreCase(name) &&
+                    existingOwner.getPhoneNumber().equalsIgnoreCase(number)) {
+
+                Animal newAnimal = createNewAnimal();
+                existingOwner.addPet(newAnimal);
+                System.out.println("Djuret har lagts till för " + existingOwner.getName());
+                return;
+            }
+        }
+        System.out.println("Kunde inte hitta kunden.");
+    }
+
+    public void listAnimals() {
+        System.out.println("Incheckade djur:");
+        for (Owner petOwner : petsInToday) {
+            System.out.println("Registrerad ägare: " + petOwner.getName());
+            for (Animal animal : petOwner.getPet()) {
+                System.out.println("- Namn: " + animal.getName() + ", Ålder: " + animal.getAge());
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Reception reception = new Reception();
+        reception.fakeClient(); // Skapa testkunder
+        reception.addAnimal(); // Lägg till ett djur
+        reception.listAnimals(); // Lista incheckade djur
+    }
+
+    public void changePetOwnership(String phoneNumber) {
+        Animal pet = null;
+
+        Owner oldOwner = checkIfOwner(phoneNumber);
+        if (oldOwner == null) {
+            return;
         }
 
         if (oldOwner.getPet() == null || oldOwner.getPet().isEmpty()) {
@@ -94,33 +138,21 @@ public class Reception {
         }
 
         System.out.println("Skapa ny ägare: ");
-        newOwner = addNewOwner();
+        Owner newOwner = addNewCostumer();
 
-        if (newOwner == null) {
-            System.out.println("Det gick inte att byta ägare");
-            return;
-        }
 
         if (oldOwner.getPet().size() > 1) {
             System.out.println("Vilket husdjur ska byta ägare?: ");
-            //skriv ut husdjurens namn och ras
-            for (Animal animal : oldOwner.getPet()) {
-                System.out.println("Namn: " + animal.getName());
-            }
+
             while (true) {
-                String whatPet = sc.nextLine();
-
                 for (Animal animal : oldOwner.getPet()) {
-                    if (oldOwner.getPet().contains(whatPet)) {
-                        pet = animal;
-                        break;
-                    }
+                    System.out.println(animal.getName());
                 }
+                String whatPet = sc.nextLine();
+                findPetByName(oldOwner, whatPet);
 
-                if (whatPet == null || whatPet.isEmpty()) {
-                    System.out.println("Du måste ange ett husdjur. Försök igen: \n");
-                } else {
-                    System.out.println("Husdjuret finns inte. Försök igen: ");
+                if (pet != null) {
+                    break;
                 }
             }
         } else {
@@ -131,25 +163,25 @@ public class Reception {
         newOwner.getPet().add(pet);
     }
 
-    public Owner addNewOwner() {
-        System.out.println("Vi behöver ditt namn");
-        String name = sc.nextLine().trim();
-        System.out.println("Vi behöver ditt telefonnummer");
-        String number = sc.nextLine().trim();
-        if (checkIfOwnerAlreadyHasAnimals(name, number)) {
-            System.out.println("Du verkar ha ett djur inne, vill du ha ett till på dagis?");
-            System.out.println("Y för ja och N för nej");
-            if (sc.nextLine().equalsIgnoreCase(answerY)) {
-                Owner newOwner = new Owner(name, number);
-                existingCostumers.add(newOwner);
-                return newOwner;
+    private void findPetByName(Owner owner, String petName) {
+        for (Animal animal : owner.getPet()) {
+            if (animal.getName().equalsIgnoreCase(petName)) {
+                return;
             } else {
-                return null;
+                System.out.println("Husdjuret finns inte");
+                return;
             }
-        } else {
-            Owner newOwner = new Owner(name, number);
-            existingCostumers.add(newOwner);
-            return newOwner;
         }
     }
+
+    private Owner checkIfOwner(String phoneNumber) {
+        for (Owner petOwner : existingCostumers) {
+            if (petOwner.getPhoneNumber().equals(phoneNumber)) {
+                return petOwner;
+            }
+        }
+        System.out.println("Det finns ingen ägare med det här telefonummret");
+        return null;
+    }
 }
+

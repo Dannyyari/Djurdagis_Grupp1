@@ -4,8 +4,16 @@ import java.util.Scanner;
 
 public class Menu {
 
-    private final Scanner scanner = new Scanner(System.in);
-    ArrayList<String> validChoices = new ArrayList<>(Arrays.asList("L", "H", "I", "R", "B", "A"));
+    private final Reception reception;
+    private final Scanner scanner;
+    private final ArrayList<String> validChoices;
+
+    public Menu() {
+        this.reception = new Reception();
+        reception.fakeClient();
+        scanner = new Scanner(System.in);
+        validChoices = new ArrayList<>(Arrays.asList("L", "H", "I", "R", "B", "A"));
+    }
 
     public String getUserInputString() {
         while (true) {
@@ -37,15 +45,23 @@ public class Menu {
                 return true;
             case "H":
                 //Hämta djur
+                System.out.println("Vad är telefonnummer till ägaren?: ");
+                reception.takeHomeYourAnimal(scanner.nextLine());
+                System.out.println("Ägarens husdjur har blivit hemtagna");
                 return true;
             case "I":
                 //Information om djur
                 return true;
             case "R":
                 //Registrera djur
+                System.out.println("Lägga till nytt djur?, absolut!");
+                reception.addAnimalToNewCustomer();
                 return true;
             case "B":
                 //Byta ägare
+                System.out.println("Vad är telefonnummer till ägare som ska byta bort djur? ");
+                reception.changePetOwnership(scanner.nextLine());
+                System.out.println("Djuret har bytt ägare");
                 return true;
             case "A":
                 //avsluta programmet
