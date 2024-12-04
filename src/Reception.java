@@ -43,9 +43,15 @@ public class Reception {
         if (checkIfOwnerAlreadyHasAnimals(name, number)){
             //existingCostumers.add(new Owner(name, number));
             System.out.println("Du verkar ha ett djur inne, vill du ha ett till på dagis?");
+            System.out.println("Y för ja och N för nej");
             if (sc.nextLine().equalsIgnoreCase(answerY)){
+                System.out.println("Okej, vill du lämna en"+
+                        "[K]att"+ "[H]und"+ "[F]ågel");
                 //skriva kod som man kan lägga till nya djur till befintlig kund
             }//else att bara avsluta.
+        }else {
+            System.out.println("Okej, vill du lämna en"+
+                    "[K]att"+ "[H]und"+ "[F]ågel");
         }
     }
 
@@ -62,10 +68,8 @@ public class Reception {
         for (Owner petOwner : petsInToday) {
             if (petOwner.getPhoneNumber().equalsIgnoreCase(phoneNumber.trim())){
                 petsInToday.remove(petOwner);
-
             }
         }
-
     }
 
 
