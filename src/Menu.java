@@ -45,9 +45,6 @@ public class Menu {
                 return true;
             case "H":
                 //Hämta djur
-                System.out.println("Vad är telefonnummer till ägaren?: ");
-                reception.takeHomeYourAnimal(scanner.nextLine());
-                System.out.println("Ägarens husdjur har blivit hemtagna");
                 return true;
             case "I":
                 //Information om djur
@@ -61,7 +58,6 @@ public class Menu {
                 //Byta ägare
                 System.out.println("Vad är telefonnummer till ägare som ska byta bort djur? ");
                 reception.changePetOwnership(scanner.nextLine());
-                System.out.println("Djuret har bytt ägare");
                 return true;
             case "A":
                 //avsluta programmet

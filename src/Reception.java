@@ -162,6 +162,8 @@ public class Reception {
         if (oldOwner.getPet() == null || oldOwner.getPet().isEmpty()) {
             existingCostumers.remove(oldOwner);
         }
+
+        System.out.println("Djuret har bytt ägare");
     }
 
     private Animal findPetByName(Owner owner, String petName) {
