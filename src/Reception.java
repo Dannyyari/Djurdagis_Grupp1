@@ -140,19 +140,16 @@ public class Reception {
         System.out.println("Skapa ny ägare: ");
         Owner newOwner = addNewCostumer();
 
-
         if (oldOwner.getPet().size() > 1) {
-            System.out.println("Vilket husdjur ska byta ägare?: ");
-
-            while (true) {
+            while (pet == null) {
+                System.out.println("Vilket husdjur ska byta ägare?: ");
                 for (Animal animal : oldOwner.getPet()) {
                     System.out.println(animal.getName());
                 }
                 String whatPet = sc.nextLine();
-                findPetByName(oldOwner, whatPet);
-
-                if (pet != null) {
-                    break;
+                pet = findPetByName(oldOwner, whatPet);
+                if (pet == null) {
+                    System.out.println("Husdjuret finns inte. Försök igen: ");
                 }
             }
         } else {
@@ -161,17 +158,19 @@ public class Reception {
 
         oldOwner.getPet().remove(pet);
         newOwner.getPet().add(pet);
+
+        if (oldOwner.getPet() == null || oldOwner.getPet().isEmpty()) {
+            existingCostumers.remove(oldOwner);
+        }
     }
 
-    private void findPetByName(Owner owner, String petName) {
+    private Animal findPetByName(Owner owner, String petName) {
         for (Animal animal : owner.getPet()) {
             if (animal.getName().equalsIgnoreCase(petName)) {
-                return;
-            } else {
-                System.out.println("Husdjuret finns inte");
-                return;
+                return animal;
             }
         }
+        return null;
     }
 
     private Owner checkIfOwner(String phoneNumber) {
