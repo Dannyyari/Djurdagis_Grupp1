@@ -14,6 +14,7 @@ public class Reception {
     public void fakeClient() {
         Owner owner1 = new Owner("Anna", "0701234567");
         owner1.addPet(new Cat("Misse", "12"));
+
         Owner owner2 = new Owner("Lars", "0712345678");
         owner2.addPet(new Dog("Rex", "12"));
         existingCostumers.add(owner1);
@@ -21,10 +22,8 @@ public class Reception {
     }
 
     public void checkIfCostumer(String number) {
-
         boolean found = false;
         for (Owner costumer : existingCostumers) {
-            found = false;
             if (costumer.getPhoneNumber().equalsIgnoreCase(number)) {
                 found = true;
                 if (!petsInToday.contains(costumer)) {
@@ -37,28 +36,35 @@ public class Reception {
             }
         }
         if (!found)
-            System.out.println("Hittar ej meddelande, kanske fel nummer?");
+            System.out.println("Hittar ej, kanske fel nummer?");
     }
 
     public void addNewCostumer() {
         System.out.println("Lägga till nytt djur, absolut!");
-        System.out.println("Vi behöver ditt namn");
+
+        System.out.println("Ditt namn");
         String name = sc.nextLine().trim();
-        System.out.println("Vi behöver ditt telefonnummer");
+
+        System.out.println("Ditt telefonnummer");
         String number = sc.nextLine().trim();
+
         if (checkIfOwnerAlreadyHasAnimals(name, number)) {
-            System.out.println("Du verkar redan ha ett djur inlagd, vill du lägga till en till? (y/n)");
+            System.out.println("Du har redan ett djur inlagd, vill du lägga till en till? (y/n)");
             String answer = sc.nextLine().trim();
 
-            if (sc.nextLine().equalsIgnoreCase(answerY)) {
-
-                System.out.println("lägger till djur på:" + name);
+            if (answer.equalsIgnoreCase(answerY)) {
+                System.out.println("Lägger till djur på: " + name);
                 addAnimalToExistingOwner(name, number);
-
-
+            }
+            } else {
+                Owner newOwner = new Owner(name, number);
+                Animal newAnimal = createNewAnimal();
+                newOwner.addPet(newAnimal);
+                existingCostumers.add(newOwner);
+                System.out.println("Ny kund och djur tillagd: " + newOwner);
             }
         }
-    }
+
 
     public boolean checkIfOwnerAlreadyHasAnimals(String name, String number) {
         for (Owner existingOwner : existingCostumers) {
@@ -81,29 +87,20 @@ public class Reception {
 
     public void addAnimal() {
 
-        System.out.println("Djurets namn:");
-        String petName = sc.nextLine().trim();
+        Animal newAnimal = createNewAnimal();
 
-        System.out.println("Djurets ålder:");
-        String petAge = sc.nextLine().trim();
-
-        Animal newAnimal = new Animal(petName, petAge);
-
-        Animal animal = new Animal(petName, petAge);
-
-        System.out.println("Ange ägares mobil nummer");
+        System.out.println("Ange ägares mobilnummer:");
         String phonenumber = sc.nextLine().trim();
 
         for (Owner owner : existingCostumers) {
             if (owner.getPhoneNumber().equalsIgnoreCase(phonenumber)) {
                 owner.addPet(newAnimal);
-                System.out.println("Djuret är tillagd " + "\n" + owner.getName());
+                System.out.println("Djuret är tillagd för " + owner.getName());
                 return;
             }
         }
         System.out.println("Ägare hittades ej!");
     }
-
     private Animal createNewAnimal() {
         System.out.println("Djurets namn:");
         String petName = sc.nextLine().trim();
@@ -111,7 +108,7 @@ public class Reception {
         System.out.println("Djurets ålder:");
         String petAge = sc.nextLine().trim();
 
-        return new Animal(petName, petAge); // Skapa och returnera ett nytt Animal-objekt
+        return new Animal(petName, petAge);
     }
 
     private void addAnimalToExistingOwner(String name, String number) {
@@ -119,20 +116,21 @@ public class Reception {
             if (existingOwner.getName().equalsIgnoreCase(name) &&
                     existingOwner.getPhoneNumber().equalsIgnoreCase(number)) {
 
-                Animal newAnimal = createNewAnimal(); // Skapa ett nytt djur
-                existingOwner.addPet(newAnimal);     // Lägg till djuret till ägaren
+                Animal newAnimal = createNewAnimal();
+                existingOwner.addPet(newAnimal);
                 System.out.println("Djuret har lagts till för " + existingOwner.getName());
                 return;
             }
         }
         System.out.println("Kunde inte hitta kunden.");
     }
+
     public void listAnimals() {
         System.out.println("Incheckade djur:");
         for (Owner petOwner : petsInToday) {
             System.out.println("Registrerad ägare: " + petOwner.getName());
             for (Animal animal : petOwner.getPet()) {
-                System.out.println("-" + animal.getName());
+                System.out.println("- Namn: " + animal.getName() + ", Ålder: " + animal.getAge());
             }
         }
     }
