@@ -40,10 +40,14 @@ public class Reception {
         String number = sc.nextLine().trim();
 
         Owner newOwner = new Owner(name, number);
+        //Kan man lägga till addAnimalToNewOwener här bara och ha (Owner newowner) som inparameter i metoden nedan?
         existingCostumers.add(newOwner);
         return newOwner;
+        //Kanske lägga till denna newOnwer i våran lista av befintliga kunder inne i metoden?
     }
 
+    //Kan man använda denna metod för att kunna lägga till nytt djur till befintlig och ny kund?
+    //kolla rad 103
     public void addAnimalToNewCustomer() {
         Owner newOwner = addNewCostumer();
         addAnimalToExistingOwner(newOwner.getName(), newOwner.getPhoneNumber());
@@ -83,6 +87,8 @@ public class Reception {
         System.out.println("Ägare hittades ej!");
     }
 
+    //Ska det inte vara en inparameter vad de är för djur typ (String nyttDjur)
+    //Sedan så har vi inuti denna metod en IF sats typ if nyttDjur==Katt så lägger vi new Animal new Cat(PetName, Pet Age)
     private Animal createNewAnimal() {
         System.out.println("Djurets namn:");
         String petName = sc.nextLine().trim();
@@ -92,6 +98,7 @@ public class Reception {
 
         return new Animal(petName, petAge);
     }
+
 
     private void addAnimalToExistingOwner(String name, String number) {
         for (Owner existingOwner : existingCostumers) {

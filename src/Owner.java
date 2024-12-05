@@ -16,7 +16,7 @@ public class Owner {
         pet.add(petToAd);
     }
 
-    public void listPets(){
+    public void callOnPet(){
         for (Animal animal : pet) {
             System.out.println(animal.getName() + " kommer nu! " + animal.makeSound());
         }
