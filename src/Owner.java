@@ -2,47 +2,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Owner {
-    protected String name;
-    protected String phoneNumber;
-    protected List<Animal> pet;
+    private String name;
+    private String phone;
+    private List<Animal> animals = new ArrayList<>();
 
-    public Owner(String name, String phoneNumber) {
+    public Owner(String name, String phone) {
         this.name = name;
-        this.phoneNumber = phoneNumber;
-        this.pet = new ArrayList<>();
-    }
-
-    public void addPet(Animal petToAd) {
-        pet.add(petToAd);
-    }
-
-    public void listPets(){
-        for (Animal animal : pet) {
-            System.out.println(animal.getName() + " kommer nu! " + animal.makeSound());
-        }
+        this.phone = phone;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getPhone() {
+        return phone;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public void addAnimal(Animal animal) {
+        animals.add(animal);
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public Animal getAnimalByName(String name) {
+        for (Animal animal : animals) {
+            if (animal.getName().equalsIgnoreCase(name)) {
+                return animal;
+            }
+        }
+        return null;
     }
 
-    public List<Animal> getPet() {
-        return pet;
-    }
-
-    public void setPet(List<Animal> pet) {
-        this.pet = pet;
+    public List<Animal> getAnimals() {
+        return animals;
     }
 }

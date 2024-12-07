@@ -1,42 +1,39 @@
-public class Animal implements Interface {
-    protected String name;
-    protected String age;
 
-    public Animal(String name, String age) {
+public abstract class Animal implements IAnimal {
+    private String name;
+    private String food;
+    private String medication;
+    private boolean checkedIn = false;
+
+    public Animal(String name, String food, String medication) {
         this.name = name;
-        this.age = age;
-    }
-
-    public Animal() {
-
+        this.food = food;
+        this.medication = medication;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getFood() {
+        return food;
     }
 
-    public String getAge() {
-        return age;
+    public String getMedication() {
+        return medication;
     }
 
-    public void setAge(String age) {
-        this.age = age;
+    public boolean isCheckedIn() {
+        return checkedIn;
     }
 
-    @Override
-    public String toString() {
-        return "Animal{" +
-                "name: " + name +
-                " age: " + age +
-                '\'';
+    public void setCheckedIn(boolean checkedIn) {
+        this.checkedIn = checkedIn;
     }
 
-    @Override
-    public String makeSound() {
-        return "";
+    public abstract void makeSound();
+
+    public String getInfo() {
+        return "Namn: " + name + ", Mat: " + food + ", Medicin: " + medication;
     }
 }

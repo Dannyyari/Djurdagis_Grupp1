@@ -1,21 +1,11 @@
-public class Cat extends Animal{
-    protected final String food= "Meat";
-    protected final String medication= "Antibiotic";
 
-    public Cat(String name, String age) {
-        super(name, age);
-    }
-
-    public String getFood() {
-        return food;
-    }
-
-    public String getMedication() {
-        return medication;
+public class Cat extends Animal {
+    public Cat(String name, String food, String medication) {
+        super(name, food, medication);
     }
 
     @Override
-    public String makeSound() {
-        return "Mjau";
+    public void makeSound() {
+        System.out.println("Mjau-mjau!");
     }
 }

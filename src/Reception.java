@@ -1,154 +1,141 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Reception {
+    private static boolean returnToMenu = false; // Flagga för att återgå till huvudmenyn
+    private OwnerManager ownerManager = new OwnerManager(); // Hanterar ägare
+    private AnimalManager animalManager = new AnimalManager(ownerManager); // Hanterar djur
+    private FileHandler fileHandler = new FileHandler(); // Hanterar filhantering
+    private Scanner scanner = new Scanner(System.in); // Scanner
 
-    protected List<Owner> existingCostumers = new ArrayList<>();
-    protected List<Owner> petsInToday = new ArrayList<>();
-    Scanner sc = new Scanner(System.in);
-    protected String answerY = "y";
-    protected String answerN = "n";
+    public void start() {
+        ownerManager.setOwners(fileHandler.loadOwners()); // Ladda ägare och incheckade djur
 
-    public void fakeClient() {
-        Owner owner1 = new Owner("Anna", "0701234567");
-        owner1.addPet(new Cat("Misse", "12"));
+        while (true) {
+            returnToMenu = false;
+            displayMenu();
+            String choice = scanner.nextLine().trim().toLowerCase();
 
-        Owner owner2 = new Owner("Lars", "0712345678");
-        owner2.addPet(new Dog("Rex", "12"));
-        existingCostumers.add(owner1);
-        existingCostumers.add(owner2);
-    }
-
-    public void checkIfCostumer(String number) {
-        boolean found = false;
-        for (Owner costumer : existingCostumers) {
-            if (costumer.getPhoneNumber().equalsIgnoreCase(number)) {
-                found = true;
-                if (!petsInToday.contains(costumer)) {
-                    petsInToday.add(costumer);
-                    System.out.println(costumer.getPet().size() + " djur incheckade för dig " + costumer);
-                } else {
-                    System.out.println("Redan incheckad för idag");
-                }
-                break;
+            switch (choice) {
+                case "1":
+                    checkIn();
+                    break;
+                case "2":
+                    checkOut();
+                    break;
+                case "3":
+                    listAnimals();
+                    break;
+                case "4":
+                    registerOwner();
+                    break;
+                case "5":
+                    exitProgram();
+                    return;
+                default:
+                    System.out.println("Ogiltigt val. Försök igen.");
             }
         }
-        if (!found)
-            System.out.println("Hittar ej, kanske fel nummer?");
+    }
+    private void displayMenu() {
+        System.out.println("\nVälkommen till Djurdagiset!");
+        System.out.println("1. Lämna djur");
+        System.out.println("2. Hämta djur");
+        System.out.println("3. Visa djur");
+        System.out.println("4. Registrera ny ägare");
+        System.out.println("5. Avsluta");
+        System.out.print("Välj ett alternativ: ");
     }
 
-    public void addNewCostumer() {
-        System.out.println("Lägga till nytt djur, absolut!");
+    private void checkIn() {
+        System.out.print("Ange ägarens telefonnummer (eller skriv MENY för att återgå): ");
+        String phone = getInput();
+        if (returnToMenu) return;
 
-        System.out.println("Ditt namn");
-        String name = sc.nextLine().trim();
-
-        System.out.println("Ditt telefonnummer");
-        String number = sc.nextLine().trim();
-
-        if (checkIfOwnerAlreadyHasAnimals(name, number)) {
-            System.out.println("Du har redan ett djur inlagd, vill du lägga till en till? (y/n)");
-            String answer = sc.nextLine().trim();
-
-            if (answer.equalsIgnoreCase(answerY)) {
-                System.out.println("Lägger till djur på: " + name);
-                addAnimalToExistingOwner(name, number);
+        Owner owner = ownerManager.findOwner(phone);
+        if (owner == null) {
+            System.out.println("Ägare hittades inte. Vill du registrera en ny ägare? (Ja/Nej)");
+            String response = getInput();
+            if (returnToMenu) return;
+            if (response.equalsIgnoreCase("JA")) {
+                registerOwner();
             }
+        } else {
+            animalManager.checkInAnimal(owner);
+        }
+    }
+
+    private void checkOut() {
+        System.out.print("Ange ägarens telefonnummer (eller skriv MENY för att återgå): ");
+        String phone = getInput();
+        if (returnToMenu) return;
+
+        Owner owner = ownerManager.findOwner(phone);
+        if (owner == null) {
+            System.out.println("Ägare hittades inte.");
+        } else {
+            animalManager.checkOutAnimal(owner);
+        }
+    }
+
+    private void listAnimals() {
+        System.out.println("\nVisa Djur"); // Visar alla ägare och deras djur
+        animalManager.listAnimals(ownerManager.getAllOwners());
+    }
+
+    private void registerOwner() {
+        System.out.print("Ange ägarens telefonnummer (eller skriv MENY för att återgå): ");
+        String phone = getInput();
+        if (returnToMenu) return;
+
+        // Kontrollera om telefonnumret redan finns
+        Owner existingOwner = ownerManager.findOwner(phone);
+        if (existingOwner != null) {
+            System.out.println("En ägare finns redan med detta telefonnummer.");
+            System.out.print("Vill du lägga till ett djur till ägaren istället? (Ja/Nej): ");
+            String response = getInput();
+            if (returnToMenu) return;
+
+            if (response.equalsIgnoreCase("JA")) {
+                animalManager.addAnimal(existingOwner); // Lägg till nytt djur
+                fileHandler.saveOwners(ownerManager.getAllOwners()); // Uppdaterar filen
+                System.out.println("Djuret har registrerats till ägaren " + existingOwner.getName() + ".");
             } else {
-                Owner newOwner = new Owner(name, number);
-                Animal newAnimal = createNewAnimal();
-                newOwner.addPet(newAnimal);
-                existingCostumers.add(newOwner);
-                System.out.println("Ny kund och djur tillagd: " + newOwner);
+                System.out.println("Återgår till huvudmenyn.");
             }
+            return;
         }
 
+        // Om telefonnumret inte finns, fortsätt med att registrera en ny ägare
+        System.out.print("Ange ägarens namn (eller skriv MENY för att återgå): ");
+        String name = getInput();
+        if (returnToMenu) return;
 
-    public boolean checkIfOwnerAlreadyHasAnimals(String name, String number) {
-        for (Owner existingOwner : existingCostumers) {
-            if ((existingOwner.getName().equalsIgnoreCase(name)) && (existingOwner.getPhoneNumber().equalsIgnoreCase(number))) {
-                return true;
-            }
-        }
-        return false;
-    }
+        Owner newOwner = new Owner(name, phone);
+        ownerManager.addOwner(newOwner);
+        fileHandler.appendOwnerToFile(newOwner); // Spara den nya ägaren direkt i filen
 
-    public void takeHomeYourAnimal(String phoneNumber) {
-        for (Owner petOwner : petsInToday) {
-            if (petOwner.getPhoneNumber().equalsIgnoreCase(phoneNumber.trim())) {
-                petsInToday.remove(petOwner);
+        System.out.println("Ny ägare registrerad. Vill du lägga till ett djur? (Ja/Nej): ");
+        String response = getInput();
+        if (returnToMenu) return;
 
-            }
-        }
-
-    }
-
-    public void addAnimal() {
-
-        Animal newAnimal = createNewAnimal();
-
-        System.out.println("Ange ägares mobilnummer:");
-        String phonenumber = sc.nextLine().trim();
-
-        for (Owner owner : existingCostumers) {
-            if (owner.getPhoneNumber().equalsIgnoreCase(phonenumber)) {
-                owner.addPet(newAnimal);
-                System.out.println("Djuret är tillagd för " + owner.getName());
-                return;
-            }
-        }
-        System.out.println("Ägare hittades ej!");
-    }
-    private Animal createNewAnimal() {
-        System.out.println("Djurets namn:");
-        String petName = sc.nextLine().trim();
-
-        System.out.println("Djurets ålder:");
-        String petAge = sc.nextLine().trim();
-
-        return new Animal(petName, petAge);
-    }
-
-    private void addAnimalToExistingOwner(String name, String number) {
-        for (Owner existingOwner : existingCostumers) {
-            if (existingOwner.getName().equalsIgnoreCase(name) &&
-                    existingOwner.getPhoneNumber().equalsIgnoreCase(number)) {
-
-                Animal newAnimal = createNewAnimal();
-                existingOwner.addPet(newAnimal);
-                System.out.println("Djuret har lagts till för " + existingOwner.getName());
-                return;
-            }
-        }
-        System.out.println("Kunde inte hitta kunden.");
-    }
-
-    public void listAnimals() {
-        System.out.println("Incheckade djur:");
-        for (Owner petOwner : petsInToday) {
-            System.out.println("Registrerad ägare: " + petOwner.getName());
-            for (Animal animal : petOwner.getPet()) {
-                System.out.println("- Namn: " + animal.getName() + ", Ålder: " + animal.getAge());
-            }
+        if (response.equalsIgnoreCase("JA")) {
+            animalManager.addAnimal(newOwner);
+            fileHandler.saveOwners(ownerManager.getAllOwners()); // Uppdaterar filen
         }
     }
 
-    public static void main(String[] args) {
-        Reception reception = new Reception();
-        reception.fakeClient(); // Skapa testkunder
-        reception.addAnimal(); // Lägg till ett djur
-        reception.listAnimals(); // Lista incheckade djur
+    private void exitProgram() {
+        fileHandler.saveOwners(ownerManager.getAllOwners()); // Spara ägare och incheckade djur
+        System.out.println("Avslutar programmet. Tack för att du använde Djurdagis!");
+    }
+
+    private String getInput() {
+        String input = scanner.nextLine().trim();
+        if (input.equalsIgnoreCase("MENY")) {
+            returnToMenu = true;
+        }
+        return input;
     }
 }
-
-
-
-
-
-
-
-
-
-
